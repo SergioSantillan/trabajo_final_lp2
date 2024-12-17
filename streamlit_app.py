@@ -2,7 +2,7 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 
 # Configuración básica de la página
-st.set_page_config(page_title="Plataforma de Noticias", layout="wide")
+st.set_page_config(page_title="Trabajo Colaborativo", layout="wide")
 
 # Colocar el logo en la barra lateral
 st.sidebar.image("imagenes/logo.png", use_container_width=True)
@@ -10,7 +10,7 @@ st.sidebar.image("imagenes/logo.png", use_container_width=True)
 # Título estilizado en la barra lateral
 st.sidebar.markdown(
     """
-    <div style="text-align: center; font-size: 24px; font-family: 'Georgia'; font-weight: bold; color: #2C3E50; margin-top: 15px;">
+    <div style="text-align: center; font-size: 24px; font-family: 'Georgia'; font-weight: bold; color: #0063c9; margin-top: 15px;">
         Plataforma de Noticias
     </div>
     """,
