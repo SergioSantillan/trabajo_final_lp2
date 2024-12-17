@@ -5,7 +5,7 @@ from streamlit_option_menu import option_menu
 st.set_page_config(page_title="Plataforma de Noticias", layout="wide")
 
 # Colocar el logo en la barra lateral
-st.sidebar.image("imagenes/escudo-unalm.png", use_container_width=True)
+st.sidebar.image("imagenes/imagen_mundo.png", use_container_width=True)
 
 # Título estilizado en la barra lateral
 st.sidebar.markdown(
