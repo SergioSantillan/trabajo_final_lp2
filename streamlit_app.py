@@ -44,10 +44,8 @@ if menu == "Noticias Relevantes":
     total_news = len(df)  # Total de noticias
     total_pages = math.ceil(total_news / NEWS_PER_PAGE)  # Calcula el total de páginas
 
-    # Selección de página actual
-    page_number = st.number_input(
-        "Página", min_value=1, max_value=total_pages, value=1, step=1, label_visibility="collapsed"
-    )
+    # Selección de página actual solo en la parte inferior
+    page_number = st.session_state.get("page_number", 1)  # Usamos session_state para persistir la página actual
 
     # Índices para filtrar noticias por página
     start_idx = (page_number - 1) * NEWS_PER_PAGE
@@ -91,6 +89,9 @@ if menu == "Noticias Relevantes":
         unsafe_allow_html=True
     )
 
+    # Actualiza el número de página con los botones
+    page_number = st.selectbox('Selecciona página', range(1, total_pages + 1), key="page_number")
+    
 elif menu == "Selector de Noticias":
     st.subheader("🔍 Selector de Noticias")
     st.write("Filtra y selecciona las noticias que te interesen.")
@@ -101,7 +102,7 @@ elif menu == "Gráficos Interactivos":
 
 elif menu == "Miembros del Proyecto":
     st.subheader("👥 Miembros del Proyecto")
-    st.write("""
+    st.write(""" 
     - **Miembro 1**: Analista de datos  
     - **Miembro 2**: Especialista en visualización  
     - **Miembro 3**: Ingeniero en IA  
