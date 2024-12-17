@@ -1,30 +1,27 @@
 import streamlit as st
 
-# Configuración básica
-st.set_page_config(page_title="Plataforma", layout="wide")
+# Configuración básica de la página
+st.set_page_config(page_title="Plataforma de Noticias", layout="wide")
 
 # Título principal
 st.title("Plataforma de Noticias")
-st.markdown("Usa los botones para navegar entre las secciones:")
+st.markdown("Usa los botones en la barra lateral para navegar entre las secciones.")
 
-# Crear botones estilizados usando HTML y CSS
+# Estilo CSS para los botones de la barra lateral
 button_styles = """
 <style>
-    .btn {
-        display: inline-block;
+    .sidebar .stButton > button {
         background-color: #007BFF; /* Color de fondo */
         color: white;             /* Color del texto */
         padding: 10px 20px;       /* Espaciado interno */
         font-size: 16px;          /* Tamaño de letra */
-        border: none;             /* Sin bordes por defecto */
+        border: none;             /* Sin bordes */
         border-radius: 25px;      /* Bordes redondeados */
         text-align: center;       /* Centrar texto */
-        text-decoration: none;    /* Sin subrayado */
-        margin: 10px 5px;         /* Espaciado entre botones */
         cursor: pointer;          /* Cambiar cursor al pasar */
         transition: 0.3s;         /* Animación suave */
     }
-    .btn:hover {
+    .sidebar .stButton > button:hover {
         background-color: #0056b3; /* Cambiar color al pasar el ratón */
     }
 </style>
@@ -32,22 +29,21 @@ button_styles = """
 
 st.markdown(button_styles, unsafe_allow_html=True)
 
-# HTML para los botones
-botones = """
-<div style="text-align: center;">
-    <a href="?section=Noticias Relevantes" class="btn">Noticias Relevantes</a>
-    <a href="?section=Selector de Noticias" class="btn">Selector de Noticias</a>
-    <a href="?section=Gráficos Interactivos" class="btn">Gráficos Interactivos</a>
-    <a href="?section=Miembros del Proyecto" class="btn">Miembros del Proyecto</a>
-</div>
-"""
-
-st.markdown(botones, unsafe_allow_html=True)
-
-# Obtener la sección seleccionada desde la URL
-seccion = st.experimental_get_query_params().get("section", [""])[0]
+# Barra lateral con botones
+with st.sidebar:
+    st.header("Navegación")
+    if st.button("Noticias Relevantes"):
+        st.session_state.seccion = "Noticias Relevantes"
+    if st.button("Selector de Noticias"):
+        st.session_state.seccion = "Selector de Noticias"
+    if st.button("Gráficos Interactivos"):
+        st.session_state.seccion = "Gráficos Interactivos"
+    if st.button("Miembros del Proyecto"):
+        st.session_state.seccion = "Miembros del Proyecto"
 
 # Mostrar contenido según la sección seleccionada
+seccion = st.session_state.get("seccion", "Noticias Relevantes")
+
 if seccion == "Noticias Relevantes":
     st.subheader("Noticias Relevantes")
     st.write("Aquí puedes ver las noticias más destacadas.")
@@ -65,7 +61,3 @@ elif seccion == "Miembros del Proyecto":
     - **Miembro 3**: Ingeniero en IA  
     - **Miembro 4**: Desarrollador web  
     """)
-
-# Mensaje por defecto
-else:
-    st.write("Selecciona una sección para explorar más.")
