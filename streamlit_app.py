@@ -17,9 +17,9 @@ for index, row in df.iterrows():
     # Columna 1: Imagen
     with col1:
         if pd.notnull(row["image"]):  # Verifica si hay una imagen
-            st.image(row["image"], use_column_width=True)
+            st.image(row["image"], use_container_width =True)
         else:
-            st.image("https://via.placeholder.com/150", use_column_width=True)  # Imagen por defecto
+            st.image("https://via.placeholder.com/150", use_container_width =True)  # Imagen por defecto
     
     # Columna 2: Título y descripción
     with col2:
