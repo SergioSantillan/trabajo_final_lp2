@@ -1,63 +1,48 @@
 import streamlit as st
-import pandas as pd
-from wordcloud import WordCloud
+from streamlit_option_menu import option_menu
 
-st.set_page_config(
-  page_title="Home",
-  page_icon="🏠️"
+# Configuración básica de la página
+st.set_page_config(page_title="Plataforma de Noticias", layout="wide")
+
+# Colocar el logo en la barra lateral
+st.sidebar.image("imagenes/escudo-unalm.png", use_container_width=True)
+
+# Título estilizado en la barra lateral
+st.sidebar.markdown(
+    """
+    <div style="text-align: center; font-size: 24px; font-family: 'Georgia'; font-weight: bold; color: #2C3E50; margin-top: 15px;">
+        Plataforma de Noticias
+    </div>
+    """,
+    unsafe_allow_html=True,
 )
 
-def generate_cloud(text):
-  """Generate a word cloud"""
-  wc = WordCloud(
-    width=600,
-    height=600,
-    max_words=2000,
-    margin=0
-  ).generate(text)
+# Menú de navegación en la barra lateral
+with st.sidebar:
+    menu = option_menu(
+        menu_title="Menú Principal",  # Título del menú
+        options=["Noticias Relevantes", "Selector de Noticias", "Gráficos Interactivos", "Miembros del Proyecto"],  # Opciones
+        icons=["newspaper", "filter", "bar-chart", "people"],  # Íconos de cada opción
+        menu_icon="cast",  # Ícono principal del menú
+        default_index=0,  # Primera opción seleccionada por defecto
+        orientation="vertical",
+    )
 
-  return wc
-
-st.write("# Fake News Classifier")
-
-st.image(
-  "./roman-kraft-_Zua2hyvTBk-unsplash.jpg"
-)
-
-st.markdown(
-  """
-  ## Introduction
-  A type of yellow journalism, fake news encapsulates pieces of news
-  that may be hoaxes and is generally spread through social media and
-  other online media.
-  This is often done to further or impose certain ideas 
-  and is often achieved with political agendas.
-  Such news items may contain false and/or exaggerated claims,
-  and may end up being viralized by algorithms,
-  and users may end up in a filter bubble.
-
-  ## Objective
-  The aim of this project is to build a model to accurately
-   **classify** a piece of news as **REAL** or **FAKE**.
-
-  ## Data Description
-  This dataset has a shape of 7796 × 4. 
-  The first column identifies the news, 
-  the second and third are the title and text, 
-  and the fourth column has labels denoting whether the news is REAL or FAKE.
-  """
-)
-
-df = pd.read_csv("./Model/news.csv")
-df.drop('Unnamed: 0', inplace=True, axis=1)
-if (st.checkbox("Show Data")):
-  x = st.slider("Rows", 5, 20, 10)
-  st.dataframe(df.head(x))
-
-st.markdown(
-  """
-  - `title`:    Represents the title of the news article.
-  - `text`:     The text containing the news in details
-  - `label`:    Classification into **REAL** or **FAKE**
-  """
-)
+# Mostrar contenido dinámico según la sección seleccionada
+if menu == "Noticias Relevantes":
+    st.subheader("Noticias Relevantes")
+    st.write("Aquí puedes ver las noticias más destacadas.")
+elif menu == "Selector de Noticias":
+    st.subheader("Selector de Noticias")
+    st.write("Filtra y selecciona las noticias que te interesen.")
+elif menu == "Gráficos Interactivos":
+    st.subheader("Gráficos Interactivos")
+    st.write("Explora los gráficos generados a partir de las noticias.")
+elif menu == "Miembros del Proyecto":
+    st.subheader("Miembros del Proyecto")
+    st.write("""
+    - **Miembro 1**: Analista de datos  
+    - **Miembro 2**: Especialista en visualización  
+    - **Miembro 3**: Ingeniero en IA  
+    - **Miembro 4**: Desarrollador web  
+    """)
