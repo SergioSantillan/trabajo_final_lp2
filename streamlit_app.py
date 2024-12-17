@@ -6,7 +6,7 @@ from streamlit_option_menu import option_menu
 st.set_page_config(page_title="Plataforma de Noticias", layout="wide")
 
 # Cargar el archivo CSV
-df = pd.read_csv("data/estructura_final.csv")  # Asegúrate de ajustar la ruta correcta
+df = pd.read_csv("data/estructura_solo_image.csv")  # Asegúrate de ajustar la ruta correcta
 
 # Barra lateral con logo y menú
 with st.sidebar:
