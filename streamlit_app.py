@@ -38,19 +38,51 @@ with st.sidebar:
 # Contenido dinámico basado en el menú seleccionado
 if menu == "Noticias Relevantes":
     st.subheader("📰 Noticias Relevantes")
-    
+
+    # Botones para filtrar noticias por categoría
+    st.write("### Filtra por categoría:")
+    categories = ["TECH", "AI", "SOCIETY", "GAMING", "LIFESTYLE", "POLITICS", "CYBERSECURITY", "AUTOMOBILE"]
+
+    # Crear una fila de botones para cada categoría
+    col1, col2, col3, col4 = st.columns(4)
+
+    # Diccionario para mapear botones a columnas
+    category_buttons = {
+        col1: categories[:2],
+        col2: categories[2:4],
+        col3: categories[4:6],
+        col4: categories[6:]
+    }
+
+    # Estado para la categoría seleccionada
+    selected_category = st.session_state.get("selected_category", None)
+
+    # Renderizar botones y capturar la categoría seleccionada
+    for col, cat_list in category_buttons.items():
+        with col:
+            for cat in cat_list:
+                if st.button(cat):
+                    selected_category = cat
+                    st.session_state["selected_category"] = cat
+
+    # Filtrar el DataFrame por la categoría seleccionada
+    if selected_category:
+        filtered_df = df[df["category"].str.contains(selected_category, case=False, na=False)]
+    else:
+        filtered_df = df
+
     # Parámetros de paginación
     NEWS_PER_PAGE = 15  # Número de noticias por página
-    total_news = len(df)  # Total de noticias
-    total_pages = math.ceil(total_news / NEWS_PER_PAGE)  # Calcula el total de páginas
+    total_news = len(filtered_df)  # Total de noticias filtradas
+    total_pages = max(1, math.ceil(total_news / NEWS_PER_PAGE))  # Calcula el total de páginas
 
-    # Selección de página actual solo con el selectbox
-    page_number = st.session_state.get("page_number", 1)  # Usamos session_state para persistir la página actual
+    # Selección de página actual usando session_state
+    page_number = st.session_state.get("page_number", 1)
 
     # Índices para filtrar noticias por página
     start_idx = (page_number - 1) * NEWS_PER_PAGE
     end_idx = start_idx + NEWS_PER_PAGE
-    current_page_news = df.iloc[start_idx:end_idx]
+    current_page_news = filtered_df.iloc[start_idx:end_idx]
 
     # Mostrar las noticias en formato de columnas (imagen + texto)
     for index, row in current_page_news.iterrows():
