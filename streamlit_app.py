@@ -44,7 +44,7 @@ if menu == "Noticias Relevantes":
     total_news = len(df)  # Total de noticias
     total_pages = math.ceil(total_news / NEWS_PER_PAGE)  # Calcula el total de páginas
 
-    # Selección de página actual solo en la parte inferior
+    # Selección de página actual solo con el selectbox
     page_number = st.session_state.get("page_number", 1)  # Usamos session_state para persistir la página actual
 
     # Índices para filtrar noticias por página
@@ -77,21 +77,15 @@ if menu == "Noticias Relevantes":
         # Línea divisoria entre noticias
         st.markdown("---")
 
-    # Navegación con paginación en números
-    st.write("### Páginas:")
-    page_numbers = [i for i in range(1, total_pages + 1)]
-    st.write(
-        " ".join(
-            f'<a style="color: #0063c9; font-weight: bold;" href="?page={p}">{p}</a>' 
-            if p != page_number else f"<b>{p}</b>" 
-            for p in page_numbers
-        ),
-        unsafe_allow_html=True
+    # Navegación con el botón desplegable para elegir la página
+    st.write("### Selecciona la página:")
+    page_number = st.selectbox(
+        'Elige la página', 
+        range(1, total_pages + 1), 
+        key="page_number", 
+        index=page_number - 1  # Inicia el selectbox con la página actual
     )
 
-    # Actualiza el número de página con los botones
-    page_number = st.selectbox('Selecciona página', range(1, total_pages + 1), key="page_number")
-    
 elif menu == "Selector de Noticias":
     st.subheader("🔍 Selector de Noticias")
     st.write("Filtra y selecciona las noticias que te interesen.")
