@@ -11,7 +11,7 @@ df = pd.read_csv("data/estructura_final.csv")  # Asegúrate de ajustar la ruta c
 # Barra lateral con logo y menú
 with st.sidebar:
     # Logo en la barra lateral
-    st.image("imagenes/logo.png", use_column_width=True)
+    st.image("imagenes/logo.png", use_container_width =True)
 
     # Título estilizado en la barra lateral
     st.markdown(
@@ -44,9 +44,9 @@ if menu == "Noticias Relevantes":
         # Columna 1: Imagen
         with col1:
             if pd.notnull(row["image"]):  # Verifica si hay imagen
-                st.image(row["image"], use_column_width=True)
+                st.image(row["image"], use_container_width =True)
             else:
-                st.image("https://via.placeholder.com/150", use_column_width=True)  # Imagen por defecto
+                st.image("https://via.placeholder.com/150", use_container_width =True)  # Imagen por defecto
         
         # Columna 2: Título y descripción
         with col2:
