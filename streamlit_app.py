@@ -37,8 +37,7 @@ with st.sidebar:
 
 # Contenido dinámico basado en el menú seleccionado
 if menu == "Noticias Relevantes":
-    st.subheader("📰 Noticias Relevantes")
-
+    
     # Botones para filtrar noticias por categoría
     st.write("### Filtra por categoría:")
     categories = ["TECH", "AI", "SOCIETY", "GAMING", "LIFESTYLE", "POLITICS", "CYBERSECURITY", "AUTOMOBILE"]
