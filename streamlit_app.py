@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 from streamlit_option_menu import option_menu
+import math  # Para calcular el número de páginas
 
 # Configuración de la página
 st.set_page_config(page_title="Plataforma de Noticias", layout="wide")
@@ -38,8 +39,23 @@ with st.sidebar:
 if menu == "Noticias Relevantes":
     st.subheader("📰 Noticias Relevantes")
     
+    # Parámetros de paginación
+    NEWS_PER_PAGE = 15  # Número de noticias por página
+    total_news = len(df)  # Total de noticias
+    total_pages = math.ceil(total_news / NEWS_PER_PAGE)  # Calcula el total de páginas
+
+    # Selección de página actual
+    page_number = st.number_input(
+        "Página", min_value=1, max_value=total_pages, value=1, step=1, label_visibility="collapsed"
+    )
+
+    # Índices para filtrar noticias por página
+    start_idx = (page_number - 1) * NEWS_PER_PAGE
+    end_idx = start_idx + NEWS_PER_PAGE
+    current_page_news = df.iloc[start_idx:end_idx]
+
     # Mostrar las noticias en formato de columnas (imagen + texto)
-    for index, row in df.iterrows():
+    for index, row in current_page_news.iterrows():
         col1, col2 = st.columns([1, 2])  # Divide la fila en dos columnas
 
         # Columna 1: Imagen
@@ -62,36 +78,18 @@ if menu == "Noticias Relevantes":
 
         # Línea divisoria entre noticias
         st.markdown("---")
-    
-    # Sección del gráfico dinámico
-    st.subheader("📈 Gráfico Dinámico de Noticias")
 
-    # Selección de filtro dinámico (por ejemplo, por categoría)
-    if "category" in df.columns:
-        category_selection = st.multiselect(
-            "Selecciona una o más categorías para visualizar",
-            options=df["category"].unique(),
-            default=df["category"].unique()
-        )
-
-        # Filtrar el DataFrame según las categorías seleccionadas
-        filtered_df = df[df["category"].isin(category_selection)]
-
-        # Crear un gráfico con Altair
-        chart = alt.Chart(filtered_df).mark_bar().encode(
-            x=alt.X("category:N", title="Categoría"),
-            y=alt.Y("count():Q", title="Cantidad de Noticias"),
-            color="category:N",
-            tooltip=["category", "count()"]
-        ).properties(
-            width=700,
-            height=400,
-            title="Distribución de Noticias por Categoría"
-        )
-
-        st.altair_chart(chart, use_container_width=True)
-    else:
-        st.write("La columna 'category' no existe en el DataFrame. No se puede generar el gráfico dinámico.")
+    # Navegación con paginación en números
+    st.write("### Páginas:")
+    page_numbers = [i for i in range(1, total_pages + 1)]
+    st.write(
+        " ".join(
+            f'<a style="color: #0063c9; font-weight: bold;" href="?page={p}">{p}</a>' 
+            if p != page_number else f"<b>{p}</b>" 
+            for p in page_numbers
+        ),
+        unsafe_allow_html=True
+    )
 
 elif menu == "Selector de Noticias":
     st.subheader("🔍 Selector de Noticias")
