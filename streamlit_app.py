@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 from streamlit_option_menu import option_menu
 
 # Configuración básica de la página
@@ -28,16 +29,29 @@ with st.sidebar:
         orientation="vertical",
     )
 
+# Cargar el archivo CSV para usar en todas las secciones
+df = pd.read_csv("data/estructura_final.csv")
+
 # Mostrar contenido dinámico según la sección seleccionada
 if menu == "Noticias Relevantes":
-    st.subheader("Noticias Relevantes")
-    st.write("Aquí puedes ver las noticias más destacadas.")
+    st.subheader("📰 Noticias Relevantes")
+
+    # Mostrar noticias en cuadros expandibles
+    for index, row in df.iterrows():
+        with st.expander(row["title"]):
+            st.write(f"**Descripción**: {row['description']}")
+            if pd.notnull(row['image']):
+                st.image(row["image"], use_column_width=True, caption=row["title"])
+            st.markdown(f'<a href="{row["url"]}" target="_blank">Leer más en la fuente original</a>', unsafe_allow_html=True)
+
 elif menu == "Selector de Noticias":
     st.subheader("Selector de Noticias")
     st.write("Filtra y selecciona las noticias que te interesen.")
+
 elif menu == "Gráficos Interactivos":
     st.subheader("Gráficos Interactivos")
     st.write("Explora los gráficos generados a partir de las noticias.")
+
 elif menu == "Miembros del Proyecto":
     st.subheader("Miembros del Proyecto")
     st.write("""
