@@ -1,54 +1,64 @@
 import streamlit as st
 
 # Configuración básica
-st.set_page_config(page_title="Mi Plataforma", layout="wide")
+st.set_page_config(page_title="Plataforma", layout="wide")
 
 # Título principal
-st.title("Plataforma de Noticias y Visualización")
-st.markdown("Esta plataforma te permite explorar noticias relevantes, gráficos interactivos y más.")
+st.title("Plataforma de Noticias")
+st.markdown("Usa los botones para navegar entre las secciones:")
 
-# Navegación con botones en la barra lateral
-st.sidebar.title("Navegación")
-opcion = st.sidebar.radio(
-    "Elige una sección:",
-    ["Noticias Relevantes", "Selector de Noticias", "Gráficos Interactivos", "Miembros del Proyecto"]
-)
+# Crear botones estilizados usando HTML y CSS
+button_styles = """
+<style>
+    .btn {
+        display: inline-block;
+        background-color: #007BFF; /* Color de fondo */
+        color: white;             /* Color del texto */
+        padding: 10px 20px;       /* Espaciado interno */
+        font-size: 16px;          /* Tamaño de letra */
+        border: none;             /* Sin bordes por defecto */
+        border-radius: 25px;      /* Bordes redondeados */
+        text-align: center;       /* Centrar texto */
+        text-decoration: none;    /* Sin subrayado */
+        margin: 10px 5px;         /* Espaciado entre botones */
+        cursor: pointer;          /* Cambiar cursor al pasar */
+        transition: 0.3s;         /* Animación suave */
+    }
+    .btn:hover {
+        background-color: #0056b3; /* Cambiar color al pasar el ratón */
+    }
+</style>
+"""
 
-# Noticias Relevantes
-if opcion == "Noticias Relevantes":
+st.markdown(button_styles, unsafe_allow_html=True)
+
+# HTML para los botones
+botones = """
+<div style="text-align: center;">
+    <a href="?section=Noticias Relevantes" class="btn">Noticias Relevantes</a>
+    <a href="?section=Selector de Noticias" class="btn">Selector de Noticias</a>
+    <a href="?section=Gráficos Interactivos" class="btn">Gráficos Interactivos</a>
+    <a href="?section=Miembros del Proyecto" class="btn">Miembros del Proyecto</a>
+</div>
+"""
+
+st.markdown(botones, unsafe_allow_html=True)
+
+# Obtener la sección seleccionada desde la URL
+seccion = st.experimental_get_query_params().get("section", [""])[0]
+
+# Mostrar contenido según la sección seleccionada
+if seccion == "Noticias Relevantes":
     st.subheader("Noticias Relevantes")
     st.write("Aquí puedes ver las noticias más destacadas.")
-    # Ejemplo: Mostrar una tabla de noticias relevantes
-    st.write("Pronto se mostrarán las noticias más relevantes aquí.")
-
-# Selector de Noticias
-elif opcion == "Selector de Noticias":
+elif seccion == "Selector de Noticias":
     st.subheader("Selector de Noticias")
     st.write("Filtra y selecciona las noticias que te interesen.")
-    # Ejemplo: Un filtro por palabras clave
-    palabra_clave = st.text_input("Busca por palabra clave:")
-    if palabra_clave:
-        st.write(f"Resultados para: **{palabra_clave}**")
-        # Agrega lógica para filtrar noticias según la palabra clave
-
-# Gráficos Interactivos
-elif opcion == "Gráficos Interactivos":
+elif seccion == "Gráficos Interactivos":
     st.subheader("Gráficos Interactivos")
     st.write("Explora los gráficos generados a partir de las noticias.")
-    # Ejemplo: Mostrar un gráfico de prueba
-    import pandas as pd
-    import numpy as np
-    import matplotlib.pyplot as plt
-    
-    # Datos de ejemplo
-    data = pd.DataFrame(np.random.randn(50, 3), columns=["A", "B", "C"])
-    st.line_chart(data)
-
-# Miembros del Proyecto
-elif opcion == "Miembros del Proyecto":
+elif seccion == "Miembros del Proyecto":
     st.subheader("Miembros del Proyecto")
-    st.write("Conoce a los integrantes del equipo.")
-    # Ejemplo: Mostrar una lista de miembros
     st.write("""
     - **Miembro 1**: Analista de datos  
     - **Miembro 2**: Especialista en visualización  
@@ -56,7 +66,6 @@ elif opcion == "Miembros del Proyecto":
     - **Miembro 4**: Desarrollador web  
     """)
 
-# Footer
-st.sidebar.markdown("---")
-st.sidebar.write("Gracias por usar nuestra plataforma.")
-
+# Mensaje por defecto
+else:
+    st.write("Selecciona una sección para explorar más.")
