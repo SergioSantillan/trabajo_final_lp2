@@ -28,7 +28,7 @@ with st.sidebar:
     # Menú de navegación en la barra lateral
     menu = option_menu(
         menu_title="Menú Principal",  # Título del menú
-        options=["Noticias Relevantes", "Selector de Noticias", "Gráficos Interactivos", "Miembros del Proyecto"],  # Opciones
+        options=["Selector de Noticias", "Gráficos Interactivos", "Conclusiones del Proyecto", "Miembros del Proyecto"],  # Opciones
         icons=["newspaper", "filter", "bar-chart", "people"],  # Íconos de cada opción
         menu_icon="cast",  # Ícono principal del menú
         default_index=0,  # Primera opción seleccionada por defecto
