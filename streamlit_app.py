@@ -12,10 +12,8 @@ df = pd.read_csv("data/estructura_definitiva.csv")  # Asegúrate de ajustar la r
 
 # Barra lateral con logo y menú
 with st.sidebar:
-    # Logo en la barra lateral
     st.image("imagenes/logo.png", use_container_width=True)
 
-    # Título estilizado en la barra lateral
     st.markdown(
         """
         <div style="text-align: center; font-size: 24px; font-family: 'Georgia'; font-weight: bold; color: #0063c9; margin-top: 15px;">
@@ -27,11 +25,11 @@ with st.sidebar:
 
     # Menú de navegación en la barra lateral
     menu = option_menu(
-        menu_title="Menú Principal",  # Título del menú
-        options=["Selector de Noticias", "Gráficos Interactivos", "Conclusiones del Proyecto", "Miembros del Proyecto"],  # Opciones
-        icons=["newspaper", "filter", "bar-chart", "people"],  # Íconos de cada opción
-        menu_icon="cast",  # Ícono principal del menú
-        default_index=0,  # Primera opción seleccionada por defecto
+        menu_title="Menú Principal",
+        options=["Selector de Noticias", "Gráficos Interactivos", "Conclusiones del Proyecto", "Miembros del Proyecto"],
+        icons=["newspaper", "filter", "bar-chart", "people"],
+        menu_icon="cast",
+        default_index=0,
         orientation="vertical",
     )
 
@@ -64,16 +62,22 @@ if menu == "Selector de Noticias":
                     selected_category = cat
                     st.session_state["selected_category"] = cat
 
-    # Filtrar el DataFrame por la categoría seleccionada
+    # Campo de búsqueda para filtrar por palabras clave en la descripción
+    search_query = st.text_input("🔍 Busca en las descripciones:", "")
+
+    # Filtrar el DataFrame por la categoría seleccionada y búsqueda
+    filtered_df = df
+
     if selected_category:
-        filtered_df = df[df["category"].str.contains(selected_category, case=False, na=False)]
-    else:
-        filtered_df = df
+        filtered_df = filtered_df[filtered_df["category"].str.contains(selected_category, case=False, na=False)]
+
+    if search_query:
+        filtered_df = filtered_df[filtered_df["description"].str.contains(search_query, case=False, na=False)]
 
     # Parámetros de paginación
-    NEWS_PER_PAGE = 15  # Número de noticias por página
-    total_news = len(filtered_df)  # Total de noticias filtradas
-    total_pages = max(1, math.ceil(total_news / NEWS_PER_PAGE))  # Calcula el total de páginas
+    NEWS_PER_PAGE = 15
+    total_news = len(filtered_df)
+    total_pages = max(1, math.ceil(total_news / NEWS_PER_PAGE))
 
     # Selección de página actual usando session_state
     page_number = st.session_state.get("page_number", 1)
@@ -85,27 +89,23 @@ if menu == "Selector de Noticias":
 
     # Mostrar las noticias en formato de columnas (imagen + texto)
     for index, row in current_page_news.iterrows():
-        col1, col2 = st.columns([1, 2])  # Divide la fila en dos columnas
+        col1, col2 = st.columns([1, 2])
 
-        # Columna 1: Imagen
         with col1:
-            if pd.notnull(row["image"]):  # Verifica si hay imagen
+            if pd.notnull(row["image"]):
                 st.image(row["image"], use_container_width=True)
             else:
-                st.image("https://via.placeholder.com/150", use_container_width=True)  # Imagen por defecto
+                st.image("https://via.placeholder.com/150", use_container_width=True)
 
-        # Columna 2: Título y descripción
         with col2:
-            st.markdown(f"### {row['title']}")  # Título de la noticia
-            st.write(row["description"])  # Descripción de la noticia
+            st.markdown(f"### {row['title']}")
+            st.write(row["description"])
 
-            # Enlace estilizado
             st.markdown(
                 f'<a href="{row["url"]}" target="_blank" style="color: #0063c9; font-weight: bold;">Leer más →</a>',
                 unsafe_allow_html=True
             )
 
-        # Línea divisoria entre noticias
         st.markdown("---")
 
     # Navegación con el botón desplegable para elegir la página
@@ -114,12 +114,8 @@ if menu == "Selector de Noticias":
         'Elige la página', 
         range(1, total_pages + 1), 
         key="page_number", 
-        index=page_number - 1  # Inicia el selectbox con la página actual
+        index=page_number - 1
     )
-
-elif menu == "Selector de Noticias":
-    st.subheader("🔍 Selector de Noticias")
-    st.write("Filtra y selecciona las noticias que te interesen.")
 
 elif menu == "Gráficos Interactivos":
     st.subheader("📊 Gráficos Interactivos")
