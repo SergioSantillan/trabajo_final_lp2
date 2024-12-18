@@ -36,7 +36,7 @@ with st.sidebar:
     )
 
 # Contenido dinámico basado en el menú seleccionado
-if menu == "Noticias Relevantes":
+if menu == "Selector de Noticias":
     
     # Botones para filtrar noticias por categoría
     st.write("### Filtra por categoría:")
