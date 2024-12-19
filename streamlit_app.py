@@ -118,7 +118,7 @@ if menu == "Selector de Noticias":
     )
 
 elif menu == "Gráficos Interactivos":
-    st.subheader("\ud83d\udcca Gráficos Interactivos")
+    st.subheader("Gráficos Interactivos")
     st.write("Explora los gráficos generados a partir de las noticias.")
 
     # Crear gráfico de barras interactivo con Plotly
@@ -146,7 +146,7 @@ elif menu == "Gráficos Interactivos":
     st.plotly_chart(fig, use_container_width=True)
 
 elif menu == "Miembros del Proyecto":
-    st.subheader("\ud83d\udc65 Miembros del Proyecto")
+    st.subheader("Miembros del Proyecto")
     st.write(""" 
     - **Miembro 1**: Analista de datos  
     - **Miembro 2**: Especialista en visualización  
