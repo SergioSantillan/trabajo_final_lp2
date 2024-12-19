@@ -117,46 +117,29 @@ if menu == "Selector de Noticias":
         index=page_number - 1
     )
 
-elif menu == "Gráficos Interactivos":
-    st.subheader("📊 Gráficos Interactivos")
-    st.write("Explora los gráficos generados a partir de las noticias.")
-    
-    # **Gráfico 1: Top 5 Categorías con más Noticias**
-    st.markdown("### Top 5 Categorías con más Noticias")
-    st.plotly_chart(fig1, use_container_width=True)  # Asegúrate de asignar `fig1` al gráfico correspondiente
+import pandas as pd
+import plotly.express as px
+import streamlit as st
 
-    # **Gráfico 2: Distribución de Noticias por Categoría**
-    st.markdown("### Distribución de Noticias por Categoría")
-    st.plotly_chart(fig2, use_container_width=True)  # Asegúrate de asignar `fig2` al gráfico correspondiente
+# Supongamos que df es tu DataFrame
+# Cargar datos de ejemplo
+df = pd.DataFrame({
+    'category': ['Política', 'Deportes', 'Cultura', 'Tecnología', 'Economía', 'Deportes', 'Cultura', 'Política'],
+    'title': ['Noticia 1', 'Noticia 2', 'Noticia 3', 'Noticia 4', 'Noticia 5', 'Noticia 6', 'Noticia 7', 'Noticia 8']
+})
 
-    # **Gráfico 3: Top 10 Fuentes por Noticias**
-    st.markdown("### Top 10 Fuentes por Noticias")
-    st.plotly_chart(fig3, use_container_width=True)  # Asegúrate de asignar `fig3` al gráfico correspondiente
+# Generar fig1
+fig1 = px.bar(
+    data_frame=df.groupby('category').size().sort_values(ascending=False).head(5).reset_index(),
+    x='category',
+    y=0,
+    labels={'category': 'Categoría', 0: 'Cantidad'},
+    title='Top 5 Categorías con más Noticias'
+)
 
-    # **Gráfico 4: Distribución de Sentimientos por Categoría**
-    st.markdown("### Distribución de Sentimientos por Categoría")
-    categories = df['category'].unique()
+# Mostrar fig1 en Streamlit
+st.plotly_chart(fig1, use_container_width=True)
 
-    for category in categories:
-        st.markdown(f"#### Categoría: {category}")
-        category_data = df[df['category'] == category]
-        sentiment_counts = category_data['sentiment'].value_counts()
-
-        # Generar gráfico de dona para cada categoría
-        fig = px.pie(
-            sentiment_counts,
-            names=sentiment_counts.index,
-            values=sentiment_counts.values,
-            title=f"Distribución de Sentimientos en {category}",
-            color=sentiment_counts.index,
-            color_discrete_map={
-                "Positive": "#FFF700",  # Amarillo
-                "Negative": "#FF1717",  # Rojo
-                "Neutral": "#2917ED"   # Azul
-            },
-            hole=0.3
-        )
-        st.plotly_chart(fig, use_container_width=True)
 
 
 elif menu == "Miembros del Proyecto":
