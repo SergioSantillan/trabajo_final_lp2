@@ -1,9 +1,9 @@
 import streamlit as st
 import pandas as pd
 import altair as alt
-import plotly.express as px
 from streamlit_option_menu import option_menu
 import math  # Para calcular el número de páginas
+import plotly.express as px
 
 # Configuración de la página
 st.set_page_config(page_title="Plataforma de Noticias", layout="wide")
@@ -36,6 +36,7 @@ with st.sidebar:
 
 # Contenido dinámico basado en el menú seleccionado
 if menu == "Selector de Noticias":
+    
     # Botones para filtrar noticias por categoría
     st.write("### Filtra por categoría:")
     categories = ["TECH", "AI", "SOCIETY", "GAMING", "LIFESTYLE", "POLITICS", "CYBERSECURITY", "AUTOMOBILE"]
@@ -63,7 +64,7 @@ if menu == "Selector de Noticias":
                     st.session_state["selected_category"] = cat
 
     # Campo de búsqueda para filtrar por palabras clave en la descripción
-    search_query = st.text_input("\ud83d\udd0d Busca en las descripciones:", "")
+    search_query = st.text_input("🔍 Busca en las descripciones:", "")
 
     # Filtrar el DataFrame por la categoría seleccionada y búsqueda
     filtered_df = df
@@ -121,17 +122,17 @@ elif menu == "Gráficos Interactivos":
     st.subheader("Gráficos Interactivos")
     st.write("Explora los gráficos generados a partir de las noticias.")
 
-    # Crear gráfico de barras interactivo con Plotly
+    # Gráfico 1: Top 5 categorías con más noticias
     top_categories = df['category'].value_counts().reset_index()
     top_categories.columns = ['Category', 'Count']
 
-    # Colores personalizados
     custom_colors = ['#4e85d5', '#25a146', '#f8fb14', '#e51313', '#e26ec4']
 
-    # Crear el gráfico
-    fig = px.bar(top_categories.head(5), x='Category', y='Count', text='Count')
-    fig.update_traces(marker_color=custom_colors[:len(top_categories.head(5))], textfont_size=14, textposition='outside')
-    fig.update_layout(
+    fig1 = px.bar(top_categories.head(5), x='Category', y='Count', text='Count')
+
+    fig1.update_traces(marker_color=custom_colors[:len(top_categories.head(5))], textfont_size=14, textposition='outside')
+
+    fig1.update_layout(
         title="<b>Top 5 Categorías con Más Noticias</b>",
         font=dict(family="Arial, sans-serif", size=16, color="#2c3e50"),
         template="plotly_white",
@@ -142,11 +143,35 @@ elif menu == "Gráficos Interactivos":
         showlegend=False
     )
 
-    # Mostrar el gráfico en Streamlit
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig1)
+
+    # Gráfico 2: Distribución de noticias por categoría
+    category_counts = df['category'].value_counts()
+
+    fig2 = px.pie(names=category_counts.index, values=category_counts.values, hole=0.3, 
+                 color=category_counts.index, color_discrete_sequence=custom_colors)
+
+    fig2.update_traces(
+        textinfo='percent+label',
+        pull=[0.1] * len(category_counts),
+        textfont=dict(size=14, color='white'),
+        marker=dict(line=dict(color='#FFFFFF', width=1))
+    )
+
+    fig2.update_layout(
+        title="<b>Distribución de Noticias por Categoría</b>",
+        title_font=dict(size=20, color='#333333'),
+        font=dict(family="Arial, sans-serif", size=14, color="#333333"),
+        template="plotly_white",
+        plot_bgcolor="#FFFFFF",
+        paper_bgcolor="#F4F4F4",
+        showlegend=True
+    )
+
+    st.plotly_chart(fig2)
 
 elif menu == "Miembros del Proyecto":
-    st.subheader("Miembros del Proyecto")
+    st.subheader("👥 Miembros del Proyecto")
     st.write(""" 
     - **Miembro 1**: Analista de datos  
     - **Miembro 2**: Especialista en visualización  
