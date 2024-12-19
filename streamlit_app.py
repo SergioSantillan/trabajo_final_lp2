@@ -1,114 +1,155 @@
 import streamlit as st
 import pandas as pd
+import altair as alt
 import plotly.express as px
-from wordcloud import WordCloud
-import matplotlib.pyplot as plt
-import random
+from streamlit_option_menu import option_menu
+import math  # Para calcular el número de páginas
 
 # Configuración de la página
-st.set_page_config(page_title="Análisis de Noticias", layout="wide")
+st.set_page_config(page_title="Plataforma de Noticias", layout="wide")
 
-# Título y descripción principal
-st.title("Análisis de Noticias Interactivas")
-st.write("Explora las noticias a través de gráficos interactivos y análisis avanzados.")
+# Cargar el archivo CSV
+df = pd.read_csv("data/estructura_definitiva.csv")  # Asegúrate de ajustar la ruta correcta
 
-# Función para cargar datos
-@st.cache_data
-def load_data(file_path=None):
-    if file_path:
-        return pd.read_csv(file_path)
-    else:
-        # Datos de ejemplo
-        return pd.DataFrame({
-            'category': ['Política', 'Deportes', 'Cultura', 'Tecnología', 'Economía', 
-                         'Deportes', 'Cultura', 'Política', 'Tecnología', 'Política'],
-            'title': ['Noticia 1', 'Noticia 2', 'Noticia 3', 'Noticia 4', 'Noticia 5', 
-                      'Noticia 6', 'Noticia 7', 'Noticia 8', 'Noticia 9', 'Noticia 10']
-        })
+# Barra lateral con logo y menú
+with st.sidebar:
+    st.image("imagenes/logo.png", use_container_width=True)
 
-# Carga de datos desde la barra lateral
-st.sidebar.header("Opciones de datos")
-data_source = st.sidebar.radio("Selecciona la fuente de datos:", ("Cargar desde archivo", "Usar datos de ejemplo"))
-
-if data_source == "Cargar desde archivo":
-    uploaded_file = st.sidebar.file_uploader("Carga tu archivo CSV", type="csv")
-    if uploaded_file is not None:
-        df = load_data(uploaded_file)
-    else:
-        st.warning("Por favor, carga un archivo para continuar.")
-        st.stop()
-else:
-    df = load_data()
-
-# Mostrar los datos cargados
-st.subheader("Datos Cargados")
-if st.checkbox("Mostrar tabla de datos"):
-    st.dataframe(df)
-
-# Análisis y Gráficos Interactivos
-st.subheader("Gráficos Interactivos")
-
-if not df.empty:
-    # Gráfico 1: Top 5 Categorías
-    st.markdown("### Gráfico 1: Top 5 Categorías con Más Noticias")
-    top_categories = df['category'].value_counts().head(5).reset_index()
-    top_categories.columns = ['Categoría', 'Cantidad']
-
-    fig1 = px.bar(
-        top_categories, x='Categoría', y='Cantidad', 
-        title='Top 5 Categorías con más Noticias', color='Categoría'
+    st.markdown(
+        """
+        <div style="text-align: center; font-size: 24px; font-family: 'Georgia'; font-weight: bold; color: #0063c9; margin-top: 15px;">
+            Plataforma de Noticias
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
-    st.plotly_chart(fig1, use_container_width=True)
 
-    # Gráfico 2: Distribución de Noticias
-    st.markdown("### Gráfico 2: Distribución de Noticias por Categoría")
-    fig2 = px.pie(
-        df, names='category', 
-        title='Distribución de Noticias por Categoría', hole=0.4
+    # Menú de navegación en la barra lateral
+    menu = option_menu(
+        menu_title="Menú Principal",
+        options=["Selector de Noticias", "Gráficos Interactivos", "Conclusiones del Proyecto", "Miembros del Proyecto"],
+        icons=["newspaper", "filter", "bar-chart", "people"],
+        menu_icon="cast",
+        default_index=0,
+        orientation="vertical",
     )
-    st.plotly_chart(fig2, use_container_width=True)
 
-    # Gráfico 3: Número de Noticias por Categoría
-    st.markdown("### Gráfico 3: Evolución del Número de Noticias")
-    df['count'] = 1  # Contador ficticio para la suma
-    time_series = df.groupby('category')['count'].sum().reset_index()
-    fig3 = px.line(
-        time_series, x='category', y='count', 
-        title='Tendencia de Noticias por Categoría', markers=True
+# Contenido dinámico basado en el menú seleccionado
+if menu == "Selector de Noticias":
+    # Botones para filtrar noticias por categoría
+    st.write("### Filtra por categoría:")
+    categories = ["TECH", "AI", "SOCIETY", "GAMING", "LIFESTYLE", "POLITICS", "CYBERSECURITY", "AUTOMOBILE"]
+
+    # Crear una fila de botones para cada categoría
+    col1, col2, col3, col4 = st.columns(4)
+
+    # Diccionario para mapear botones a columnas
+    category_buttons = {
+        col1: categories[:2],
+        col2: categories[2:4],
+        col3: categories[4:6],
+        col4: categories[6:]
+    }
+
+    # Estado para la categoría seleccionada
+    selected_category = st.session_state.get("selected_category", None)
+
+    # Renderizar botones y capturar la categoría seleccionada
+    for col, cat_list in category_buttons.items():
+        with col:
+            for cat in cat_list:
+                if st.button(cat):
+                    selected_category = cat
+                    st.session_state["selected_category"] = cat
+
+    # Campo de búsqueda para filtrar por palabras clave en la descripción
+    search_query = st.text_input("\ud83d\udd0d Busca en las descripciones:", "")
+
+    # Filtrar el DataFrame por la categoría seleccionada y búsqueda
+    filtered_df = df
+
+    if selected_category:
+        filtered_df = filtered_df[filtered_df["category"].str.contains(selected_category, case=False, na=False)]
+
+    if search_query:
+        filtered_df = filtered_df[filtered_df["description"].str.contains(search_query, case=False, na=False)]
+
+    # Parámetros de paginación
+    NEWS_PER_PAGE = 15
+    total_news = len(filtered_df)
+    total_pages = max(1, math.ceil(total_news / NEWS_PER_PAGE))
+
+    # Selección de página actual usando session_state
+    page_number = st.session_state.get("page_number", 1)
+
+    # Índices para filtrar noticias por página
+    start_idx = (page_number - 1) * NEWS_PER_PAGE
+    end_idx = start_idx + NEWS_PER_PAGE
+    current_page_news = filtered_df.iloc[start_idx:end_idx]
+
+    # Mostrar las noticias en formato de columnas (imagen + texto)
+    for index, row in current_page_news.iterrows():
+        col1, col2 = st.columns([1, 2])
+
+        with col1:
+            if pd.notnull(row["image"]):
+                st.image(row["image"], use_container_width=True)
+            else:
+                st.image("https://via.placeholder.com/150", use_container_width=True)
+
+        with col2:
+            st.markdown(f"### {row['title']}")
+            st.write(row["description"])
+
+            st.markdown(
+                f'<a href="{row["url"]}" target="_blank" style="color: #0063c9; font-weight: bold;">Leer más →</a>',
+                unsafe_allow_html=True
+            )
+
+        st.markdown("---")
+
+    # Navegación con el botón desplegable para elegir la página
+    st.write("### Selecciona la página:")
+    page_number = st.selectbox(
+        'Elige la página', 
+        range(1, total_pages + 1), 
+        key="page_number", 
+        index=page_number - 1
     )
-    st.plotly_chart(fig3, use_container_width=True)
 
-    # Gráfico 4: Gráfico de Dispersión de Categorías
-    st.markdown("### Gráfico 4: Dispersión de Categorías")
-    fig4 = px.scatter(
-        df, x='category', y='title', 
-        title='Relación entre Categorías y Noticias', color='category'
+elif menu == "Gráficos Interactivos":
+    st.subheader("\ud83d\udcca Gráficos Interactivos")
+    st.write("Explora los gráficos generados a partir de las noticias.")
+
+    # Crear gráfico de barras interactivo con Plotly
+    top_categories = df['category'].value_counts().reset_index()
+    top_categories.columns = ['Category', 'Count']
+
+    # Colores personalizados
+    custom_colors = ['#4e85d5', '#25a146', '#f8fb14', '#e51313', '#e26ec4']
+
+    # Crear el gráfico
+    fig = px.bar(top_categories.head(5), x='Category', y='Count', text='Count')
+    fig.update_traces(marker_color=custom_colors[:len(top_categories.head(5))], textfont_size=14, textposition='outside')
+    fig.update_layout(
+        title="<b>Top 5 Categorías con Más Noticias</b>",
+        font=dict(family="Arial, sans-serif", size=16, color="#2c3e50"),
+        template="plotly_white",
+        plot_bgcolor="#FAFAFA",
+        paper_bgcolor="#FFFFFF",
+        yaxis=dict(showgrid=False),
+        xaxis=dict(title=dict(font=dict(size=16, color="black"))),
+        showlegend=False
     )
-    st.plotly_chart(fig4, use_container_width=True)
 
-    # Gráfico 5: Nube de Palabras
-    st.markdown("### Gráfico 5: Nube de Palabras de los Títulos de Noticias")
+    # Mostrar el gráfico en Streamlit
+    st.plotly_chart(fig, use_container_width=True)
 
-    # Configurar paleta de colores
-    color_palette = ["#FFF700", "#FF1717", "#2917ED", "#25a146"]
-
-    def random_color_func(word, font_size, position, orientation, random_state=None, **kwargs):
-        return random.choice(color_palette)
-
-    # Crear nube de palabras
-    titles = df['title'].dropna().tolist()
-    text = " ".join(titles)
-    wordcloud = WordCloud(
-        width=800, height=400, background_color='white', 
-        max_words=100, color_func=random_color_func, 
-        contour_color='black', contour_width=1
-    ).generate(text)
-
-    # Mostrar nube de palabras
-    fig, ax = plt.subplots(figsize=(10, 5))
-    ax.imshow(wordcloud, interpolation='bilinear')
-    ax.axis("off")
-    ax.set_title("Nube de Palabras de los Títulos de Noticias", fontsize=18, fontweight='bold')
-    st.pyplot(fig)
-else:
-    st.error("El conjunto de datos está vacío. Verifica el archivo cargado.")
+elif menu == "Miembros del Proyecto":
+    st.subheader("\ud83d\udc65 Miembros del Proyecto")
+    st.write(""" 
+    - **Miembro 1**: Analista de datos  
+    - **Miembro 2**: Especialista en visualización  
+    - **Miembro 3**: Ingeniero en IA  
+    - **Miembro 4**: Desarrollador web  
+    """)
