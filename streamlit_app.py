@@ -4,7 +4,7 @@ import plotly.express as px
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 import random
-
+from wordcloud import WordCloud 
 # Configuración de la página
 st.set_page_config(page_title="Análisis de Noticias", layout="wide")
 
