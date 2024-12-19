@@ -120,6 +120,44 @@ if menu == "Selector de Noticias":
 elif menu == "Gráficos Interactivos":
     st.subheader("📊 Gráficos Interactivos")
     st.write("Explora los gráficos generados a partir de las noticias.")
+    
+    # **Gráfico 1: Top 5 Categorías con más Noticias**
+    st.markdown("### Top 5 Categorías con más Noticias")
+    st.plotly_chart(fig1, use_container_width=True)  # Asegúrate de asignar `fig1` al gráfico correspondiente
+
+    # **Gráfico 2: Distribución de Noticias por Categoría**
+    st.markdown("### Distribución de Noticias por Categoría")
+    st.plotly_chart(fig2, use_container_width=True)  # Asegúrate de asignar `fig2` al gráfico correspondiente
+
+    # **Gráfico 3: Top 10 Fuentes por Noticias**
+    st.markdown("### Top 10 Fuentes por Noticias")
+    st.plotly_chart(fig3, use_container_width=True)  # Asegúrate de asignar `fig3` al gráfico correspondiente
+
+    # **Gráfico 4: Distribución de Sentimientos por Categoría**
+    st.markdown("### Distribución de Sentimientos por Categoría")
+    categories = df['category'].unique()
+
+    for category in categories:
+        st.markdown(f"#### Categoría: {category}")
+        category_data = df[df['category'] == category]
+        sentiment_counts = category_data['sentiment'].value_counts()
+
+        # Generar gráfico de dona para cada categoría
+        fig = px.pie(
+            sentiment_counts,
+            names=sentiment_counts.index,
+            values=sentiment_counts.values,
+            title=f"Distribución de Sentimientos en {category}",
+            color=sentiment_counts.index,
+            color_discrete_map={
+                "Positive": "#FFF700",  # Amarillo
+                "Negative": "#FF1717",  # Rojo
+                "Neutral": "#2917ED"   # Azul
+            },
+            hole=0.3
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
 
 elif menu == "Miembros del Proyecto":
     st.subheader("👥 Miembros del Proyecto")
